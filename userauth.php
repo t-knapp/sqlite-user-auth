@@ -35,7 +35,7 @@
                     );";
             if(!$this->db->exec($sql)){
                 print_r($this->db->errorInfo());
-                die("The database table already exists. Please remove createTables() from your code<br />";
+                die("The database table already exists. Please remove createTables() from your code<br />");
             }
             die("The database and tables were created. Please remove createTables() from userauth.php now.");
         }
@@ -118,7 +118,7 @@
             }
         }
         
-        public function isloggedin() {
+        public function isAuthenticated() {
             return isset($_SESSION['uid']);
         }
         
@@ -130,14 +130,14 @@
         }
         
         public function uname() {
-            if ($this->isloggedin()) 
+            if ($this->isAuthenticated()) 
                 return $_SESSION['uname'];
             else 
                 return "NO LOGIN.";
         }
     }
-    $u = new userauth();
-    $u->dbinit();
+    $auth = new userauth();
+    $auth->dbinit();
     
     //Initial
     //$u->createTables();

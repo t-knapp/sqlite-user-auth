@@ -1,18 +1,18 @@
 <?php include 'userauth.php';
 
-$u->cookielogin();
+$auth->cookielogin();
 
 if (isset($_GET['a']) && $_GET['a'] == "logout")
-	$u->logout();
+	$auth->logout();
 if (isset($_POST['user'])) {
-	$res = ($u->login($_POST['user'], $_POST['pass'], true)) ? "Logged in!" : "Login failed.";
+	$res = ($auth->login($_POST['user'], $_POST['pass'], true)) ? "Logged in!" : "Login failed.";
 }	
 
  ?>
 <h1>Demo of User Authentication system</h1><br />
 <?php
-	if ($u->isloggedin()) {
-		echo "You are currently logged in as " . $u->uname() . ". Click <a href=\"?a=logout\">here</a> to log out.";
+	if ($auth->isAuthenticated()) {
+		echo "You are currently logged in as " . $auth->uname() . ". Click <a href=\"?a=logout\">here</a> to log out.";
 	} else {
 ?>
 <form method="POST" action="demo.php">
@@ -25,7 +25,7 @@ Password: <input type="password" name="pass" />
 <h1>Create a new user</h1><br />
 <?php
 	if (isset($_POST['newuser'])) {
-		echo ($u->newUser($_POST['newuser'], $_POST['pass'])) ? "User created." : "Username taken.";
+		echo ($auth->newUser($_POST['newuser'], $_POST['pass'])) ? "User created." : "Username taken.";
 	}
 ?>
 <form method="POST" action="demo.php">
