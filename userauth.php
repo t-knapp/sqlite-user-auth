@@ -6,7 +6,7 @@
         //Since the database is being stored in an unencrypted file, we need
         //strong protection on the passwords.
         
-        private $salt = "@#6$%^&*THIS$%^&IS(&^A%^&LARGE^&**%^&SALT-8,/7%^&*";
+        private $bcryptOptions = [ 'salt' => "@#6$%^&*THIS$%^&IS(&^A%^&LARGE^&**%^&SALT-8,/7%^&*" ];
         private $dbfile = "sqlite:userauth.db";
         private $db = null;
         
@@ -30,18 +30,18 @@
             $sql = "CREATE TABLE users (
                         uid INTEGER PRIMARY KEY,
                         username varchar(255),
-                        password varchar(32),
+                        password varchar(60),
                         lastlogin int
                     );";
-            $this->db->exec($sql) or
-
-            die("The database table already exists. Please remove createTables() from your code<br />" . $this->db->errorInfo());
-
+            if(!$this->db->exec($sql)){
+                print_r($this->db->errorInfo());
+                die("The database table already exists. Please remove createTables() from your code<br />";
+            }
             die("The database and tables were created. Please remove createTables() from userauth.php now.");
         }
         
         public function login($user, $password, $stayloggedin = false) {
-            $pass = md5($this->salt . $password);
+            $pass = password_hash($password, PASSWORD_BCRYPT, $this->bcryptOptions);
             $sql = "SELECT * FROM users WHERE username = :user AND password = :pass LIMIT 1";
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(":user", $user, PDO::PARAM_STR);
@@ -67,7 +67,7 @@
         //Returns false if username is taken
         public function newUser($username, $password) {
             $user = $username;
-            $pass = md5($this->salt . $password);
+            $pass = password_hash($password, PASSWORD_BCRYPT, $this->bcryptOptions);
             $time = time();
             
             $sql = "SELECT uid FROM users WHERE username = :user";
@@ -138,4 +138,7 @@
     }
     $u = new userauth();
     $u->dbinit();
+    
+    //Initial
+    //$u->createTables();
 ?>
